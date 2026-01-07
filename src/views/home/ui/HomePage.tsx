@@ -19,7 +19,6 @@ export function HomePage() {
           fill="#ffffff"
         />
       </div>
-      <footer className="mt-8">Em construção...</footer>
     </main>
   );
 }
