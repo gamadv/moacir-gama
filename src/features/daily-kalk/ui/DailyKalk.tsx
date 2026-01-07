@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { calculateWorkHours, WorkHoursResult } from '../model/calculate-hours';
+import { calculateEndTime, calculateWorkHours, WorkHoursResult } from '../model/calculate-hours';
 import { TimeInput } from './TimeInput';
 
 const STATUS_STYLES = {
@@ -27,9 +27,14 @@ export function DailyKalk() {
     return calculateWorkHours(entry1, exit1, entry2, exit2);
   }, [entry1, exit1, entry2, exit2]);
 
-  // Verifica quais períodos estão completos para feedback visual
+  const endTime = useMemo(() => {
+    return calculateEndTime(entry1, exit1, entry2, exit2);
+  }, [entry1, exit1, entry2, exit2]);
+
   const hasMorningPeriod = entry1.length === 5 && exit1.length === 5;
   const hasAfternoonPeriod = entry2.length === 5 && exit2.length === 5;
+  const hasAnyInput =
+    entry1.length === 5 || exit1.length === 5 || entry2.length === 5 || exit2.length === 5;
   const isPartialCalculation =
     (hasMorningPeriod || hasAfternoonPeriod) && !(hasMorningPeriod && hasAfternoonPeriod);
 
@@ -39,7 +44,6 @@ export function DailyKalk() {
         Calcule suas horas úteis diárias de trabalho
       </p>
 
-      {/* Período da Manhã */}
       <div className="mb-6">
         <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-3">
           Período da Manhã
@@ -51,7 +55,6 @@ export function DailyKalk() {
         </div>
       </div>
 
-      {/* Período da Tarde */}
       <div className="mb-8">
         <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-3">
           Período da Tarde
@@ -63,11 +66,21 @@ export function DailyKalk() {
         </div>
       </div>
 
-      {/* Resultado - Mostrado em tempo real */}
       <div className="border-t border-gray-800 pt-6">
+        {endTime && (
+          <div className="text-center mb-6 px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-800">
+            <p className="text-gray-300 text-sm">
+              🕐 Sua jornada finaliza às{' '}
+              <span className="font-mono font-bold text-white">{endTime}</span>
+            </p>
+            {!exit1 && !entry2 && (
+              <p className="text-gray-500 text-xs mt-1">(considerando 1h de intervalo)</p>
+            )}
+          </div>
+        )}
+
         {result ? (
           <>
-            {/* Aviso de cálculo parcial */}
             {isPartialCalculation && (
               <p className="text-center text-yellow-500/70 text-xs mb-4">
                 ⚠ Cálculo parcial - preencha ambos os períodos para resultado completo
@@ -75,7 +88,6 @@ export function DailyKalk() {
             )}
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {/* Total de Horas */}
               <div
                 className={`flex flex-col items-center px-6 py-4 rounded-lg border transition-all ${STATUS_STYLES[result.status]}`}>
                 <span className="text-xs uppercase tracking-wider opacity-70 mb-1">
@@ -85,7 +97,6 @@ export function DailyKalk() {
                 <span className="text-xs mt-1">{STATUS_LABELS[result.status]}</span>
               </div>
 
-              {/* Horas Restantes/Extras */}
               {result.status !== 'exact' && (
                 <div className="flex flex-col items-center px-6 py-4 rounded-lg border border-gray-700 bg-gray-800/50 text-gray-400 transition-all">
                   <span className="text-xs uppercase tracking-wider opacity-70 mb-1">
@@ -105,7 +116,11 @@ export function DailyKalk() {
               Total Trabalhado
             </span>
             <span className="text-3xl font-mono font-bold">0h</span>
-            <span className="text-xs mt-1">Preencha ao menos um período completo</span>
+            <span className="text-xs mt-1">
+              {hasAnyInput
+                ? 'Complete um período para calcular'
+                : 'Preencha os horários para começar'}
+            </span>
           </div>
         )}
       </div>

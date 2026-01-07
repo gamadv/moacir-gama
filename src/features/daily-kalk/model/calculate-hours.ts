@@ -13,6 +13,15 @@ export function timeToMinutes(time: string): number | null {
 }
 
 /**
+ * Converte minutos para formato HH:MM
+ */
+export function minutesToTimeString(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60) % 24;
+  const minutes = totalMinutes % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+/**
  * Formata minutos para exibição legível (ex: "8h 30min")
  */
 export function formatMinutesToDisplay(totalMinutes: number): string {
@@ -40,6 +49,7 @@ export interface WorkHoursResult {
 }
 
 const TARGET_MINUTES = 8 * 60; // 8 horas em minutos
+const DEFAULT_LUNCH_BREAK = 60; // 1 hora de almoço padrão
 
 /**
  * Calcula as horas trabalhadas considerando períodos parciais
@@ -100,4 +110,35 @@ export function calculateWorkHours(
     remainingFormatted: formatMinutesToDisplay(remainingMinutes),
     status,
   };
+}
+
+/**
+ * Calcula o horário previsto de término da jornada considerando 8h de trabalho
+ */
+export function calculateEndTime(
+  entry1: string,
+  exit1: string,
+  entry2: string,
+  _exit2: string
+): string | null {
+  const e1 = timeToMinutes(entry1);
+  const x1 = timeToMinutes(exit1);
+  const e2 = timeToMinutes(entry2);
+
+  // Precisa pelo menos da entrada inicial
+  if (e1 === null) {
+    return null;
+  }
+
+  let lunchBreak = DEFAULT_LUNCH_BREAK;
+
+  // Se temos saída do almoço e retorno, calcula o intervalo real
+  if (x1 !== null && e2 !== null && e2 > x1) {
+    lunchBreak = e2 - x1;
+  }
+
+  // Horário de término = entrada + 8h de trabalho + intervalo de almoço
+  const endTimeMinutes = e1 + TARGET_MINUTES + lunchBreak;
+
+  return minutesToTimeString(endTimeMinutes);
 }
