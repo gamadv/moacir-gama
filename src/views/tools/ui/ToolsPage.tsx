@@ -1,32 +1,8 @@
 'use client';
 
-import { DailyKalk } from '@/features/daily-kalk';
-import { Tabs, UnderConstruction } from '@/shared/ui';
+import { Tabs } from '@/shared/ui';
 
-function DailyKalkContent() {
-  return (
-    <div className="py-4">
-      <DailyKalk />
-    </div>
-  );
-}
-
-function JardaniContent() {
-  return <UnderConstruction title="Jardani" message="Esta ferramenta está em desenvolvimento..." />;
-}
-
-const toolTabs = [
-  {
-    value: 'dailykalk',
-    label: 'DailyKalK',
-    content: <DailyKalkContent />,
-  },
-  {
-    value: 'jardani',
-    label: 'Jardani',
-    content: <JardaniContent />,
-  },
-];
+import { toolTabs } from '../config/tool-tabs';
 
 export function ToolsPage() {
   return (
