@@ -8,12 +8,12 @@ import { usePopupSignIn } from '../lib/use-popup-signin';
 import { GoogleIcon } from './GoogleIcon';
 
 interface LoginButtonProps {
-  showIcon?: boolean;
+  isLoading?: boolean;
   variant?: 'default' | 'outline' | 'ghost';
 }
 
-export function LoginButton({ showIcon = false, variant = 'outline' }: LoginButtonProps) {
-  const { signInWithPopup, isLoading } = usePopupSignIn();
+export function LoginButton({ isLoading = false, variant = 'outline' }: LoginButtonProps) {
+  const { signInWithPopup } = usePopupSignIn();
 
   return (
     <Button
@@ -26,7 +26,7 @@ export function LoginButton({ showIcon = false, variant = 'outline' }: LoginButt
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
         <>
-          {showIcon && <GoogleIcon className="w-4 h-4" />}
+          <GoogleIcon className="w-4 h-4" />
           Entrar
         </>
       )}

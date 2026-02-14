@@ -1,7 +1,9 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 
 import { GoogleIcon, usePopupSignIn } from '@/features/auth';
 import { Button } from '@/shared/ui/button';
@@ -9,7 +11,16 @@ import { Button } from '@/shared/ui/button';
 export function LoginPage() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
-  const { signInWithPopup, isLoading } = usePopupSignIn();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const { signInWithPopup, isLoading } = usePopupSignIn(callbackUrl);
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session?.user) {
+      router.push(callbackUrl);
+    }
+  }, [session, router, callbackUrl]);
 
   return (
     <main className="min-h-screen flex items-center justify-center px-6">

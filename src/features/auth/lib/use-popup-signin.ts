@@ -1,11 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useCallback, useState } from 'react';
 
-export function usePopupSignIn() {
+export function usePopupSignIn(callbackUrl?: string) {
   const [isLoading, setIsLoading] = useState(false);
   const { update } = useSession();
+  const router = useRouter();
 
   const signInWithPopup = useCallback(() => {
     setIsLoading(true);
@@ -25,15 +27,19 @@ export function usePopupSignIn() {
       try {
         if (!popup || popup.closed) {
           clearInterval(interval);
-          await update();
+          const session = await update();
           setIsLoading(false);
+
+          if (session?.user) {
+            router.push(callbackUrl || '/dashboard');
+            router.refresh();
+          }
         }
       } catch {
         // COOP bloqueia acesso a popup.closed enquanto está no Google
-        // Ignorar — o check funcionará quando o popup voltar para nossa origem
       }
     }, 500);
-  }, [update]);
+  }, [update, router, callbackUrl]);
 
   return { signInWithPopup, isLoading };
 }

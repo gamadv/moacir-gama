@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import type { ComponentType } from 'react';
 
 import { LoginButton, UserMenu } from '@/features/auth';
+
 const navItems = [
   { href: '/tools', label: 'Tools' },
   { href: '/resume', label: 'Resume' },
@@ -26,8 +27,8 @@ const mobileNavItems: {
 ];
 
 export function Header() {
-  const pathname = usePathname();
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   return (
     <>
@@ -60,13 +61,7 @@ export function Header() {
 
           {/* Desktop auth */}
           <div className="hidden sm:flex items-center">
-            {status === 'loading' ? (
-              <div className="w-6 h-6 rounded-full bg-blue-500 animate-pulse" />
-            ) : session ? (
-              <UserMenu />
-            ) : (
-              <LoginButton />
-            )}
+            {session ? <UserMenu /> : <LoginButton isLoading={status === 'loading'} />}
           </div>
         </nav>
       </header>
