@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Courier_Prime, Inter } from 'next/font/google';
 
+import { AuthProvider } from '@/shared/lib/auth/AuthProvider';
 import { Header } from '@/widgets/header';
 
 const inter = Inter({
@@ -119,8 +120,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
       <body className={`${inter.variable} ${courierPrime.variable}`}>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

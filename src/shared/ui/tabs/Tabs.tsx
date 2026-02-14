@@ -3,6 +3,8 @@
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import * as React from 'react';
 
+import { cn } from '@/shared/lib/utils';
+
 interface TabItem {
   value: string;
   label: string;
@@ -12,17 +14,23 @@ interface TabItem {
 interface TabsProps {
   items: TabItem[];
   defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string | number | null) => void;
   className?: string;
 }
 
-export function Tabs({ items, defaultValue, className }: TabsProps) {
+export function Tabs({ items, defaultValue, value, onValueChange, className }: TabsProps) {
   const defaultTab = defaultValue || items[0]?.value;
 
   return (
-    <BaseTabs.Root defaultValue={defaultTab} className={className}>
+    <BaseTabs.Root
+      defaultValue={value ? undefined : defaultTab}
+      value={value}
+      onValueChange={onValueChange}
+      className={className}>
       <BaseTabs.List className="flex gap-1 border-b border-gray-700 mb-6">
         {items.map((item) => (
-          <TabsTrigger key={item.value} value={item.value}>
+          <TabsTrigger key={item.value} value={item.value} isSelected={value === item.value}>
             {item.label}
           </TabsTrigger>
         ))}
@@ -39,15 +47,20 @@ export function Tabs({ items, defaultValue, className }: TabsProps) {
 interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
+  isSelected: boolean;
 }
 
-function TabsTrigger({ value, children }: TabsTriggerProps) {
+function TabsTrigger({ value, children, isSelected = false }: TabsTriggerProps) {
   return (
     <BaseTabs.Tab
       value={value}
-      className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors
-                 border-b-2 border-transparent data-[selected]:border-white data-[selected]:text-white
-                 cursor-pointer focus:outline-none">
+      className={cn(
+        'px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors',
+        isSelected ? 'text-white' : 'text-gray-400',
+        'border-b-2 border-transparent data-[selected]:border-white',
+        'data-selected:bg-white/10 rounded-t-md',
+        'cursor-pointer focus:outline-none'
+      )}>
       {children}
     </BaseTabs.Tab>
   );
