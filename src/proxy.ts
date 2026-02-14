@@ -1,19 +1,23 @@
-import { auth } from '@/shared/lib/auth/session';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export const proxy = auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const { pathname } = req.nextUrl;
+const protectedRoutes = ['/dashboard'];
 
-  // Rotas protegidas
-  const protectedRoutes = ['/dashboard'];
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
-  if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = new URL('/login', req.nextUrl.origin);
-    loginUrl.searchParams.set('callbackUrl', pathname);
-    return Response.redirect(loginUrl);
+  if (isProtectedRoute) {
+    const sessionToken =
+      request.cookies.get('authjs.session-token')?.value ||
+      request.cookies.get('__Secure-authjs.session-token')?.value;
+
+    if (!sessionToken) {
+      const loginUrl = new URL('/login', request.nextUrl.origin);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
   }
-});
+}
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico|icons|.*\\.png$).*)'],
