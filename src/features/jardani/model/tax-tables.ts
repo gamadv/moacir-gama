@@ -78,8 +78,8 @@ export const INSS_EMPLOYEE_RATE = 0.11; // 11%
 /** Fator R mínimo para enquadramento no Anexo III */
 export const FATOR_R_THRESHOLD = 0.28; // 28%
 
-/** Salário mínimo vigente (2025) */
-export const MINIMUM_WAGE = 151_800; // R$ 1.518,00 em centavos
+/** Salário mínimo vigente (2026) */
+export const MINIMUM_WAGE = 162_100; // R$ 1.621,00 em centavos
 
 /** Dedução por dependente no IRRF (R$ 189,59) */
 export const IRRF_DEPENDENT_DEDUCTION = 18_959; // centavos

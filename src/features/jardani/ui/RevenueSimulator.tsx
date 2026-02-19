@@ -84,7 +84,7 @@ export function RevenueSimulator({ revenues, currentYear, currentMonth }: Revenu
         inss: proLabore.inssEmployee,
         irrf: proLabore.irrf,
         totalTax: das + proLabore.inssEmployee + proLabore.irrf,
-        net: simulatedCentavos - das,
+        net: simulatedCentavos - das - proLabore.inssEmployee - proLabore.irrf,
       });
     }
 

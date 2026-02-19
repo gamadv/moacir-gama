@@ -173,7 +173,8 @@ export function calculateMonthSummary(
     effectiveRate,
     simplesNacionalTax,
     proLabore,
-    netAfterTaxes: revenue - simplesNacionalTax,
+    netAfterTaxes:
+      revenue - simplesNacionalTax - (proLabore?.inssEmployee ?? 0) - (proLabore?.irrf ?? 0),
   };
 }
 
