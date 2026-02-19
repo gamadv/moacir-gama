@@ -26,9 +26,12 @@ shared/
 ├── lib/
 │   ├── utils.ts                 # cn() — merge de classes Tailwind
 │   ├── prisma.ts                # PrismaClient singleton
-│   └── auth/
-│       ├── session.ts           # NextAuth handlers, auth(), signIn, signOut
-│       └── AuthProvider.tsx     # SessionProvider wrapper (client)
+│   ├── auth/
+│   │   ├── session.ts           # NextAuth handlers, auth(), signIn, signOut
+│   │   └── AuthProvider.tsx     # SessionProvider wrapper (client)
+│   └── swr/
+│       ├── fetcher.ts           # Fetcher genérico para SWR (Axios)
+│       └── index.ts             # Barrel export
 ├── config/
 │   └── auth.config.ts           # Configuração NextAuth
 └── index.ts                     # Re-exporta shared/ui
@@ -150,6 +153,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
 
 Client component que wrapa com `SessionProvider` do NextAuth. Aplicado no RootLayout.
 
+### SWR Fetcher (`swr/fetcher.ts`)
+
+Fetcher genérico e tipado para uso com `useSWR`. Usa Axios para HTTP.
+
+```typescript
+export async function fetcher<T>(url: string): Promise<T>
+```
+
+- Faz GET via `axios.get()` e retorna `response.data.data` (unwrap do envelope da API)
+- Retorna `null` em 401 (não autenticado) — sem lançar erro
+- Lança `Error` com mensagem da API em outros erros
+
+**Uso**: Passado como segundo argumento do `useSWR()` nas features.
+
 ---
 
 ## Import Paths
@@ -159,6 +176,7 @@ import { Button, Input, Badge, Dialog, ... } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { prisma } from '@/shared/lib/prisma';
 import { auth } from '@/shared/lib/auth/session';
+import { fetcher } from '@/shared/lib/swr';
 ```
 
 ---

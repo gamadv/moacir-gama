@@ -1,6 +1,7 @@
 import { DailyKalk } from '@/features/daily-kalk';
+import { Jardani } from '@/features/jardani';
 import { PrintLooker } from '@/features/print-looker';
-import { UnderConstruction } from '@/shared/ui';
+import { AuthLockedMessage } from '@/shared/ui';
 
 function DailyKalkContent() {
   return (
@@ -19,7 +20,20 @@ function PrintLookerContent() {
 }
 
 function JardaniContent() {
-  return <UnderConstruction title="Jardani" message="Esta ferramenta está em desenvolvimento..." />;
+  return (
+    <div className="py-4">
+      <Jardani />
+    </div>
+  );
+}
+
+function JardaniLockedContent() {
+  return (
+    <AuthLockedMessage
+      title="Jardani"
+      message="Controlador financeiro com cálculo de impostos do Simples Nacional. Faça login para acessar."
+    />
+  );
 }
 
 export const toolTabs = [
@@ -37,5 +51,7 @@ export const toolTabs = [
     value: 'jardani',
     label: 'Jardani',
     content: <JardaniContent />,
+    isAuthRequired: true,
+    lockedContent: <JardaniLockedContent />,
   },
 ];

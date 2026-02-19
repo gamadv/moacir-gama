@@ -16,8 +16,67 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  company       Company?
+  assets        FinancialAsset[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Company {
+  id         String           @id @default(cuid())
+  name       String
+  userId     String           @unique
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dependents Int              @default(0)
+  proLabore  Int              @default(0) // centavos
+  revenues   MonthlyRevenue[]
+  contracts  PjContract[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+model PjContract {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  valorHora Int      // centavos (R$ 150,00 = 15000)
+  horasMes  Int      // centésimos de hora (160,5h = 16050)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+model MonthlyRevenue {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  year      Int
+  month     Int
+  revenue   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, year, month])
+  @@index([companyId])
+}
+
+model FinancialAsset {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category        String   // "renda_variavel" | "renda_fixa"
+  institution     String   // Nomad, C6, BTG, Daycoval, Toro, etc.
+  assetType       String   // Stocks, Crypto, CDB, LCA, Ações & FIIs
+  valueBrl        Int      // centavos de reais
+  valueForeign    Int?     // centavos em moeda estrangeira (nullable)
+  foreignCurrency String?  // "USD" (nullable, null = só BRL)
+  yieldRate       String?  // "100%", "IPCA + 9,01%", "106%" (nullable)
+  notes           String?  // observações livres
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Account {

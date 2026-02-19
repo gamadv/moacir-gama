@@ -31,6 +31,7 @@ npm run format       # Formatar código com Prettier
 | **Estilização** | Tailwind CSS 4, class-variance-authority (CVA) |
 | **Componentes UI** | @radix-ui (dialog, select, label), @base-ui/react (tabs) |
 | **Ícones** | lucide-react |
+| **Data Fetching** | SWR, Axios |
 | **Testes** | Vitest, @testing-library/react, jsdom |
 | **Qualidade** | ESLint, Prettier, Husky (pre-commit) |
 | **Autenticação** | NextAuth.js v5 (Auth.js), Google OAuth |
@@ -49,12 +50,13 @@ src/
 ├── features/         # Features de negócio (model + ui)
 │   ├── auth/         # Autenticação (LoginButton, UserMenu, guards)
 │   ├── daily-kalk/   # Calculadora de horas trabalhadas
-│   └── print-looker/ # Calculadora de preços de impressão
+│   ├── print-looker/ # Calculadora de preços de impressão
+│   └── jardani/      # Controlador financeiro Simples Nacional
 ├── views/            # Componentes de página
 ├── widgets/          # Componentes complexos reutilizáveis (Header)
 ├── shared/           # Componentes e utilitários compartilhados
 │   ├── config/       # Configurações (auth.config.ts)
-│   ├── lib/          # Utilitários (prisma.ts, auth/, utils.ts)
+│   ├── lib/          # Utilitários (prisma.ts, auth/, swr/, utils.ts)
 │   └── ui/           # Biblioteca de componentes
 ├── entities/         # Entidades de domínio
 │   └── user/         # Entidade usuário (UserAvatar)
@@ -108,7 +110,24 @@ Calculadora de preços de impressão com descontos por volume.
 - `model/calculate-price.ts` - Lógica de preços e descontos
 - `ui/PrintLooker.tsx` - Componente principal
 
-### 3. Auth (`src/features/auth/`)
+### 3. Jardani (`src/features/jardani/`)
+
+Controlador financeiro para Simples Nacional (ME).
+
+**Funcionalidades:**
+- Cálculo automático de impostos (DAS, INSS, IRRF)
+- Controle de faturamento mensal (RBT12)
+- Simulador de contratos PJ
+- Pro-labore via Fator R
+
+**Arquivos principais:**
+- `model/calculate-tax.ts` - Lógica de cálculo de impostos
+- `model/types.ts` - Tipos compartilhados
+- `lib/use-jardani.ts` - Hook de data fetching (SWR + Axios)
+- `lib/cache-keys.ts` - Chaves de cache SWR
+- `ui/Jardani.tsx` - Componente orquestrador
+
+### 4. Auth (`src/features/auth/`)
 
 Sistema de autenticação com Google OAuth.
 
@@ -238,8 +257,9 @@ Cada camada/feature possui um CLAUDE.md com contexto detalhado:
 |------|---------|----------|
 | **DailyKalk** | `src/features/daily-kalk/CLAUDE.md` | Funções, tipos, regras de negócio, testes, UI |
 | **PrintLooker** | `src/features/print-looker/CLAUDE.md` | Tabela de preços, algoritmo de desconto, UI |
+| **Jardani** | `src/features/jardani/CLAUDE.md` | Impostos, regras Simples Nacional, API, data fetching |
 | **Auth** | `src/features/auth/CLAUDE.md` | Fluxo OAuth, proteção de rotas, componentes, schema |
-| **Shared** | `src/shared/CLAUDE.md` | Componentes UI (variantes, props), utilitários |
+| **Shared** | `src/shared/CLAUDE.md` | Componentes UI (variantes, props), utilitários, SWR fetcher |
 | **Views** | `src/views/CLAUDE.md` | Mapa de rotas, padrão page→view, layouts |
 | **Widgets** | `src/widgets/CLAUDE.md` | Header (navegação, auth state, active links) |
 | **Entities** | `src/entities/CLAUDE.md` | User type, UserAvatar (props, sizes, fallback) |

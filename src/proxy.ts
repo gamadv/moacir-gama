@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = ['/dashboard'];
+const protectedRoutes = ['/dashboard', '/tools/jardani'];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

@@ -1,0 +1,1 @@
+export { AuthLockedMessage } from './AuthLockedMessage';

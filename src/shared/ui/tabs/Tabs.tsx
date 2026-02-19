@@ -1,6 +1,7 @@
 'use client';
 
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
+import { Lock } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils';
@@ -9,6 +10,8 @@ interface TabItem {
   value: string;
   label: string;
   content: React.ReactNode;
+  isAuthRequired?: boolean;
+  lockedContent?: React.ReactNode;
 }
 
 interface TabsProps {
@@ -17,9 +20,19 @@ interface TabsProps {
   value?: string;
   onValueChange?: (value: string | number | null) => void;
   className?: string;
+  isAuthenticated?: boolean;
+  tabListRef?: React.Ref<HTMLDivElement>;
 }
 
-export function Tabs({ items, defaultValue, value, onValueChange, className }: TabsProps) {
+export function Tabs({
+  items,
+  defaultValue,
+  value,
+  onValueChange,
+  className,
+  isAuthenticated,
+  tabListRef,
+}: TabsProps) {
   const defaultTab = defaultValue || items[0]?.value;
 
   return (
@@ -28,18 +41,28 @@ export function Tabs({ items, defaultValue, value, onValueChange, className }: T
       value={value}
       onValueChange={onValueChange}
       className={className}>
-      <BaseTabs.List className="flex gap-1 border-b border-gray-700 mb-6">
-        {items.map((item) => (
-          <TabsTrigger key={item.value} value={item.value} isSelected={value === item.value}>
-            {item.label}
-          </TabsTrigger>
-        ))}
+      <BaseTabs.List ref={tabListRef} className="flex gap-1 border-b border-gray-700 mb-6">
+        {items.map((item) => {
+          const isLocked = item.isAuthRequired && !isAuthenticated;
+          return (
+            <TabsTrigger
+              key={item.value}
+              value={item.value}
+              isSelected={value === item.value}
+              isLocked={isLocked}>
+              {item.label}
+            </TabsTrigger>
+          );
+        })}
       </BaseTabs.List>
-      {items.map((item) => (
-        <TabsContent key={item.value} value={item.value}>
-          {item.content}
-        </TabsContent>
-      ))}
+      {items.map((item) => {
+        const isLocked = item.isAuthRequired && !isAuthenticated;
+        return (
+          <TabsContent key={item.value} value={item.value}>
+            {isLocked ? (item.lockedContent ?? item.content) : item.content}
+          </TabsContent>
+        );
+      })}
     </BaseTabs.Root>
   );
 }
@@ -48,20 +71,28 @@ interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
   isSelected: boolean;
+  isLocked?: boolean;
 }
 
-function TabsTrigger({ value, children, isSelected = false }: TabsTriggerProps) {
+function TabsTrigger({ value, children, isSelected = false, isLocked }: TabsTriggerProps) {
   return (
     <BaseTabs.Tab
       value={value}
       className={cn(
-        'px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors',
-        isSelected ? 'text-white' : 'text-gray-400',
-        'border-b-2 border-transparent data-[selected]:border-white',
+        'px-4 py-2 text-sm font-medium transition-colors',
+        'border-b-2 border-transparent data-selected:border-white',
         'data-selected:bg-white/10 rounded-t-md',
-        'cursor-pointer focus:outline-none'
+        'cursor-pointer focus:outline-none',
+        isLocked
+          ? 'text-gray-600 hover:text-gray-500'
+          : isSelected
+            ? 'text-white'
+            : 'text-gray-400 hover:text-white'
       )}>
-      {children}
+      <span className="flex items-center gap-1.5">
+        {children}
+        {isLocked && <Lock className="h-3 w-3" />}
+      </span>
     </BaseTabs.Tab>
   );
 }
